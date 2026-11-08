@@ -382,10 +382,10 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-library],[
  else if(b.dataset.library in LINKS){e.stopImmediatePropagation();open('<h2>বাইরের নির্ভরযোগ্য উৎস</h2><p class="muted">এই বিষয়বস্তু বাংলা সহ নির্ভরযোগ্য ওয়েবসাইটে আছে।</p><div class="modal-actions"><a class="btn" target="_blank" rel="noopener" href="'+LINKS[b.dataset.library]+'">ওয়েবসাইট খুলুন ↗</a></div>')}},true);
 /* ---- থিম (লাইট/ডার্ক/অটো), বড় লেখা, ঘড়ি: সাইডবারে ---- */
 const G=k=>{try{return localStorage.getItem(k)}catch(e){return null}},W=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
-const ap=()=>{const t=G('theme')||'auto',r=document.documentElement;t==='auto'?r.removeAttribute('data-theme'):r.setAttribute('data-theme',t);document.body.classList.toggle('big',G('bg')==='1');$$('[data-th]').forEach(x=>x.classList.toggle('on',x.dataset.th===t));const bb=$('#bgBtn');if(bb)bb.classList.toggle('on',G('bg')==='1')};
+const MQ=matchMedia('(prefers-color-scheme: dark)');const getPref=()=>{const t=G('theme');return t==='light'||t==='auto'?t:'dark'};const resolveTheme=()=>{const t=getPref();return t==='auto'?(MQ.matches?'dark':'light'):t};const ap=()=>{const t=getPref(),r=document.documentElement,rt=resolveTheme();r.setAttribute('data-theme',rt);const mc=document.querySelector('meta[name=theme-color]');if(mc)mc.content=rt==='light'?'#0b6b4f':(r.dataset.mtheme==='neon'?'#050a24':'#00170e');document.body.classList.toggle('big',G('bg')==='1');$$('[data-th]').forEach(x=>x.classList.toggle('on',x.dataset.th===t));const bb=$('#bgBtn');if(bb)bb.classList.toggle('on',G('bg')==='1')};window._applyMode=ap;window._getPref=getPref;window._resolveTheme=resolveTheme;const onMQ=()=>{if(getPref()==='auto'){ap();render()}};MQ.addEventListener?MQ.addEventListener('change',onMQ):MQ.addListener&&MQ.addListener(onMQ);
 $('.sidebar-foot').insertAdjacentHTML('beforebegin','<div class="prefs"><b>দেখার ধরন</b><div class="seg"><button data-th="light">☀ লাইট</button><button data-th="dark">☾ ডার্ক</button><button data-th="auto">অটো</button></div><div class="seg"><button id="bgBtn">A+ বড় লেখা</button><span id="clkSlot" style="flex:1;display:flex"></span></div></div>');
 const ck=$('#clockBtn');if(ck)$('#clkSlot').appendChild(ck);
-$$('[data-th]').forEach(x=>x.onclick=()=>{W('theme',x.dataset.th);ap()});$('#bgBtn').onclick=()=>{W('bg',G('bg')==='1'?'0':'1');ap()};ap();
+$$('[data-th]').forEach(x=>x.onclick=()=>{W('theme',x.dataset.th);ap();render()});$('#bgBtn').onclick=()=>{W('bg',G('bg')==='1'?'0':'1');ap()};ap();
 /* ---- লাইব্রেরি পেজে নতুন কার্ড ---- */
 const _r=render;render=function(){_r();if(page==='prayer'){const g=$('#content .page-grid');if(g&&!$('#qcard')){g.insertAdjacentHTML('afterend',qCard());const q=$('#qGo');if(q)q.onclick=qSensor;qStart()}}if(page==='library'){const g=$('#content .page-grid');if(g&&!$('[data-feat]'))g.insertAdjacentHTML('beforeend',['tj|🎨|রঙিন তাজবিদ কুরআন|তাজবিদের নিয়ম রঙে চেনা|কুরআন খুলুন','qb|🧭|কিবলা কম্পাস|কাবার দিক দেখুন|কম্পাস খুলুন'].map(x=>{x=x.split('|');return `<div class="page-card library-card"><div class="book-icon">${x[1]}</div><div><h3>${x[2]}</h3><p>${x[3]}</p><button class="btn secondary small" data-feat="${x[0]}">${x[4]}</button></div></div>`}).join(''))}};render()
 })();
@@ -472,10 +472,13 @@ const homeGreen=function(){
 /* ===== থিম বদল (সবুজ / নিয়ন) ===== */
 const THEMES={green:['🟢 সবুজ-সোনালি','আগের ডিজাইন'],neon:['🔵 নিয়ন নীল','রাতের আকাশ, নীল-বেগুনি-সবুজ আলো']};
 const curTheme=()=>document.documentElement.dataset.mtheme==='neon'?'neon':'green';
+const isDark=()=>document.documentElement.getAttribute('data-theme')!=='light';
+const homeLight=home;
 function setTheme(t){try{localStorage.gm_mtheme=t}catch(e){}document.documentElement.dataset.mtheme=t;
- const m=document.querySelector('meta[name=theme-color]');if(m)m.content=t==='neon'?'#050a24':'#00170e';render()}
+ if(window._applyMode)window._applyMode();render()}
+function setMode(m){try{localStorage.setItem('theme',m)}catch(e){}if(window._applyMode)window._applyMode();render()}
 function themeSheet(){const c=curTheme();
- $('#modalBody').innerHTML=`<h2>🎨 থিম বেছে নিন</h2><div class="th-grid">${Object.keys(THEMES).map(k=>`<button class="th-card ${k} ${c===k?'on':''}" data-pick="${k}"><span class="th-sw"><i></i><i></i><i></i></span><b>${THEMES[k][0]}</b><small>${THEMES[k][1]}</small>${c===k?'<em>✓ চালু আছে</em>':''}</button>`).join('')}</div><p class="muted" style="font-size:13px">পছন্দ এই ফোনে সেভ থাকবে।</p>`;
+ const pm=window._getPref?window._getPref():'dark';$('#modalBody').innerHTML=`<h2>🎨 থিম বেছে নিন</h2><div class="th-mode"><b>দেখার ধরন</b><div class="seg">${[['light','☀ লাইট'],['dark','☾ ডার্ক'],['auto','অটো']].map(x=>`<button class="${pm===x[0]?'on':''}" data-mode="${x[0]}">${x[1]}</button>`).join('')}</div></div><div class="th-grid">${Object.keys(THEMES).map(k=>`<button class="th-card ${k} ${c===k?'on':''}" data-pick="${k}"><span class="th-sw"><i></i><i></i><i></i></span><b>${THEMES[k][0]}</b><small>${THEMES[k][1]}</small>${c===k?'<em>✓ চালু আছে</em>':''}</button>`).join('')}</div><p class="muted" style="font-size:13px">সবুজ-সোনালি ও নিয়ন নীল থিম ডার্ক মোডে দেখা যায়। পছন্দ এই ফোনে সেভ থাকবে।</p>`;
  $('#modalBackdrop').classList.add('show')}
 /* ===== হিসাবের ডাটা ও AI ===== */
 const bnn=n=>Number(n).toLocaleString('bn-BD'),dstr=d=>d.toISOString().slice(0,10);
@@ -570,10 +573,11 @@ function homeNeon(){
  <section class="n-card n-ai"><div class="n-lh"><b>✨ AI সহকারী</b><span class="n-rt"><i></i>স্মার্ট</span></div><p>${esc(insights()[0])}</p><div class="n-aib"><button class="n-btn" data-ai>বিশ্লেষণ দেখুন</button><button class="n-btn ghost" data-ai>প্রশ্ন করুন</button></div></section></div>`}
 document.addEventListener('change',e=>{if(e.target.id==='nPer'){NP=e.target.value;render()}});
 document.addEventListener('click',e=>{
- if(e.target.closest('[data-theme]')){e.preventDefault();themeSheet();return}
+ const _tb=e.target.closest('[data-theme]');if(_tb&&_tb!==document.documentElement){e.preventDefault();themeSheet();return}
+ const _mb=e.target.closest('[data-mode]');if(_mb){setMode(_mb.dataset.mode);themeSheet();return}
  if(e.target.closest('[data-ai]')){e.preventDefault();aiSheet();return}
- const k=e.target.closest('[data-pick]');if(k){setTheme(k.dataset.pick);typeof closeModal==='function'?closeModal():$('#modalBackdrop').classList.remove('show');toast(k.dataset.pick==='neon'?'নিয়ন থিম চালু':'সবুজ-সোনালি থিম চালু')}});
-home=function(){return curTheme()==='neon'?homeNeon():homeGreen()};
+ const k=e.target.closest('[data-pick]');if(k){try{if(!isDark())localStorage.setItem('theme','dark')}catch(_){}setTheme(k.dataset.pick);typeof closeModal==='function'?closeModal():$('#modalBackdrop').classList.remove('show');toast(k.dataset.pick==='neon'?'নিয়ন থিম চালু':'সবুজ-সোনালি থিম চালু')}});
+home=function(){return !isDark()?homeLight():(curTheme()==='neon'?homeNeon():homeGreen())};
 {const sf=document.querySelector('.sidebar-foot');if(sf)sf.insertAdjacentHTML('beforebegin','<button class="nav-item" data-theme>🎨 <span>থিম পরিবর্তন</span></button><button class="nav-item" data-ai>✨ <span>AI সহকারী</span></button>')}
 function tick(){const el=document.getElementById('mCd');if(!el)return;const x=nextP();if(!x)return;
  let s=Math.max(0,Math.floor((x.d-new Date())/1e3));el.textContent=b2(s/3600|0)+':'+b2(s%3600/60|0)+':'+b2(s%60);document.getElementById('mNm').textContent=x.n;
