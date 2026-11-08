@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#062f27"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="description" content="গোপীনাথপুর জামে মসজিদ — ডিজিটাল মসজিদ ব্যবস্থাপনা">
+<link rel="manifest" href="manifest.json"><link rel="icon" href="icon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>গোপীনাথপুর জামে মসজিদ</title><link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app-shell">
+<aside class="sidebar" id="sidebar">
+  <div class="brand"><div class="brand-mark">☾</div><div><b>গোপীনাথপুর</b><small>জামে মসজিদ</small></div></div>
+  <div class="side-label">মূল মেনু</div>
+  <nav id="nav">
+    <button class="nav-item active" data-page="home">⌂ <span>ড্যাশবোর্ড</span></button>
+    <button class="nav-item" data-page="prayer">◷ <span>নামাজের সময়</span></button>
+    <button class="nav-item" data-page="notices">▤ <span>ঘোষণা ও নোটিশ</span></button>
+    <button class="nav-item" data-page="donations">♡ <span>দান ও অনুদান</span></button>
+    <button class="nav-item" data-page="accounts">৳ <span>আয়-ব্যয়ের হিসাব</span></button>
+    <button class="nav-item" data-page="committee">♙ <span>কমিটি ও পরিচিতি</span></button>
+    <button class="nav-item" data-page="library">▣ <span>ইসলামিক লাইব্রেরি</span></button>
+    <button class="nav-item" data-page="community">♧ <span>কমিউনিটি ও সেবা</span></button>
+    <button class="nav-item" data-page="events">▦ <span>ইভেন্ট ও মাহফিল</span></button>
+    <button class="nav-item" data-page="gallery">▧ <span>ছবি ও ভিডিও</span></button>
+    <button class="nav-item" data-page="archive">🗂 <span>পুরোনো বছরের হিসাব</span></button>
+    <button class="nav-item" data-page="blood">🩸 <span>রক্তদাতা তালিকা</span></button>
+    <button class="nav-item owner-only" data-page="team">👥 <span>অ্যাডমিন ব্যবস্থাপনা</span></button>
+    <button class="nav-item" data-page="admin">⚙ <span>অ্যাডমিন প্যানেল</span></button>
+  </nav>
+  <div class="sidebar-foot"><span class="live-dot"></span> মসজিদের ডিজিটাল সেবা <small>Version 1.0 · PWA</small></div>
+</aside>
+<main class="main">
+<header class="topbar"><button class="icon-btn mobile-menu" id="menuBtn">☰</button><div><div class="eyebrow" id="dateLine">আজকের তারিখ</div><h1 id="pageTitle">ড্যাশবোর্ড</h1></div><div class="top-actions"><button class="icon-btn" id="installBtn" hidden title="অ্যাপ ইনস্টল করুন">⤓</button><button class="icon-btn" id="notifyBtn" title="নোটিফিকেশন">♧</button><button class="profile" id="adminShortcut">A</button></div></header>
+<div class="content" id="content"></div>
+<footer>© <span id="year"></span> গোপীনাথপুর জামে মসজিদ · <span>আল্লাহ আমাদের সবার ইবাদত কবুল করুন</span></footer>
+</main></div>
+<div class="toast" id="toast"></div>
+<div class="modal-backdrop" id="modalBackdrop"><section class="modal" id="modal"><button class="modal-close" id="closeModal">×</button><div id="modalBody"></div></section></div>
+<nav class="dock" id="dock"><button data-page="home"><i>⌂</i>হোম</button><button data-page="prayer"><i>◷</i>নামাজ</button><button data-page="donations"><i>♡</i>দান</button><button data-page="accounts"><i>৳</i>হিসাব</button><button><i>☰</i>আরও</button></nav>
+<script src="firebase-config.js"></script><script src="app.js"></script><script src="premium.js"></script><script src="cloud.js"></script>
+</body></html>
