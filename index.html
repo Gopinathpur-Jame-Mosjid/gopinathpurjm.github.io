@@ -480,6 +480,42 @@ html[data-theme=dark][data-mtheme=neon] .n-per select{background:transparent!imp
 @media(max-width:370px){.n-title h1{font-size:16px}.n-stat b{font-size:15px}.n-two{grid-template-columns:1fr}.n-two .n-card+.n-card{margin-left:0}}
 
 </style>
+<style id="lib2css">
+html[data-theme=dark] .m-top{padding-right:64px}
+html[data-theme=dark] .m-brand{min-width:0}
+html[data-theme=dark] .m-brand h1{white-space:normal;font-size:19px}
+body.fs-on{overflow:hidden}
+#fsView{position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;background:#00170e;color:#fff}
+html[data-theme=light] #fsView{background:#f6fbf8;color:#12372a}
+.fs-bar{display:flex;align-items:center;gap:10px;padding:calc(env(safe-area-inset-top,0px) + 8px) 10px 8px;background:#00281a;border-bottom:1px solid #d8c04a66;color:#fff;flex:none}
+html[data-theme=light] .fs-bar{background:#0b6b4f}
+.fs-bar b{flex:1;min-width:0;font:700 17px 'Anek Bangla',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fs-back,.fs-ext{width:40px;height:40px;border-radius:12px;border:1px solid #ffffff33;background:#ffffff14;color:#fff;font-size:20px;display:grid;place-items:center;text-decoration:none;cursor:pointer;font-family:inherit}
+.fs-body{flex:1;position:relative;overflow:auto;-webkit-overflow-scrolling:touch}
+.fs-body iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#fff}
+.fs-load{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;gap:10px;color:#cfe;pointer-events:none}
+.fs-spin{width:34px;height:34px;border-radius:50%;border:3px solid #ffffff33;border-top-color:#f5d04a;animation:fsr 1s linear infinite}
+@keyframes fsr{to{transform:rotate(360deg)}}
+.fs-hint{position:absolute;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:14px;background:#001f12f2;color:#fff;font-size:13px;border:1px solid #d8c04a88}
+.fs-hint[hidden]{display:none}
+.fs-hint span{flex:1}.fs-hint button{border:0;background:none;color:#fff;font-size:16px}
+.qr-ctl{position:sticky;top:0;z-index:2;padding:10px 12px;background:#00170ef5;border-bottom:1px solid var(--line)}
+html[data-theme=light] .qr-ctl{background:#f6fbf8f5}
+.qr-ctl select{width:100%;padding:10px;border-radius:12px;font:inherit}
+.qr-opt{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;margin-top:8px;font-size:13px}
+.qr-opt label{display:flex;gap:5px;align-items:center}
+.qr-fz{margin-left:auto;display:flex;gap:6px}.qr-fz button{border:1px solid var(--line);background:#ffffff14;color:inherit;border-radius:10px;padding:4px 10px;font:inherit}
+.qr #qrKey,.qr #qrBody{padding:0 14px}
+.qr .ar{font-size:var(--qfz,28px);line-height:2.1}
+.qr .ay{position:relative;padding:14px 0}
+.qr .ay-n{display:inline-grid;place-items:center;min-width:26px;height:26px;padding:0 6px;border-radius:13px;background:#f5d04a22;color:#f5d04a;font-size:12px;margin-bottom:4px}
+.qr .ay-tn{margin-top:6px;font-size:15px;line-height:1.7;color:#f5d04a;font-style:italic}
+html[data-theme=light] .qr .ay-tn{color:#0b6b4f}
+.qr .ay-tl{margin:6px 0 0;font-size:16px;line-height:1.75}
+.qr-bis{text-align:center;font:400 var(--qfz,28px)/2 'Amiri','Scheherazade New','Noto Naskh Arabic',serif;padding:16px 0 4px}
+.qr-note{margin:14px 0;font-size:12px;opacity:.75}
+.qr-nav{display:flex;justify-content:space-between;gap:10px;padding:16px 0 calc(env(safe-area-inset-bottom,0px) + 24px)}
+</style>
 </head>
 <body>
 <div class="app-shell">
@@ -511,6 +547,6 @@ html[data-theme=dark][data-mtheme=neon] .n-per select{background:transparent!imp
 </main></div>
 <div class="toast" id="toast"></div>
 <div class="modal-backdrop" id="modalBackdrop"><section class="modal" id="modal"><button class="modal-close" id="closeModal">×</button><div id="modalBody"></div></section></div>
-<nav class="dock" id="dock"><button data-page="home"><i>🏠</i>হোম</button><button data-page="prayer"><i>🕐</i>নামাজ</button><button class="mid" data-page="committee" aria-label="পরিচিতি"><i>🕌</i></button><button data-page="gallery"><i>🖼️</i>গ্যালারি</button><button><i>⋯</i>আরও</button></nav>
+<nav class="dock" id="dock"><button data-page="home"><i>🏠</i>হোম</button><button data-page="prayer"><i>🕐</i>নামাজ</button><button class="mid" data-page="committee" aria-label="পরিচিতি"><i>🕌</i></button><button data-page="gallery"><i>🖼️</i>গ্যালারি</button><button><i>☰</i>মেনু</button></nav>
 <script src="firebase-config.js"></script><script src="app.js?v=15"></script>
 </body></html>

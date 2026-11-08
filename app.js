@@ -460,7 +460,7 @@ const homeGreen=function(){
  const tchips=`<button class="m-chip" data-theme>🎨 থিম</button><button class="m-chip" data-ai>✨ AI সহকারী</button>`;
  return `<div class="mh"><header class="m-hero"><svg class="m-moon" viewBox="0 0 50 50"><path d="M33 4a22 22 0 1 0 13 30A17 17 0 0 1 33 4z" fill="#fff6c8"/></svg>
  <div class="m-top"><div class="m-brand"><div class="m-logo">🕌</div><div><h1>গোপীনাথপুর <em>জামে মসজিদ</em></h1><p>শান্তি · ইবাদত · সেবা</p></div></div></div>
- <div class="m-tools"><button class="m-pill" onclick="document.getElementById('menuBtn').click()">☰ মেনু</button><button class="m-bell" data-go="notices" aria-label="নোটিশ">🔔<b>${Number(db.notices.length).toLocaleString('bn-BD')}</b></button></div>
+ <div class="m-tools"><button class="m-bell" data-go="notices" aria-label="নোটিশ">🔔<b>${Number(db.notices.length).toLocaleString('bn-BD')}</b></button></div>
  <div class="m-quote">“নিশ্চয়ই আল্লাহর স্মরণেই অন্তর প্রশান্তি পায়।”<span>— কুরআন ১৩:২৮</span><i></i></div></header>
  <section class="m-row1"><div class="m-glass m-date"><span class="ic">📅</span><div><b>${esc(new Intl.DateTimeFormat('bn-BD',{weekday:'short',day:'numeric',month:'short',year:'numeric'}).format(new Date()))}</b><small>${esc(hj())}</small></div></div>
  <div class="m-glass m-next"><span class="ic">🕌</span><div><small>পরবর্তী নামাজ</small><strong id="mNm">—</strong><time id="mCd">০০:০০:০০</time></div></div></section>
@@ -559,7 +559,7 @@ function homeNeon(){
  const stats=[['👥',db.members.length,'সদস্য'],['📢',db.notices.length,'নোটিশ'],['▦',db.events.length,'ইভেন্ট'],['🧾',txAll().length,'লেনদেন']];
  return `<div class="mh nh"><header class="n-hero"><div class="n-top"><div class="n-logo">🕌</div><div class="n-title"><h1>গোপীনাথপুর জামে মসজিদ</h1><p>ডিজিটাল ড্যাশবোর্ড</p><u></u></div>
  <button class="n-bell" data-go="notices" aria-label="নোটিশ">🔔<b></b></button><button class="n-avatar" data-go="admin" aria-label="অ্যাডমিন">A</button></div>
- <div class="n-row2"><button class="n-menu" onclick="document.getElementById('menuBtn').click()" aria-label="মেনু">☰</button><div class="n-welcome"><small>আসসালামু আলাইকুম</small><b>প্রিয় মুসল্লি 👋</b></div>
+ <div class="n-row2"><div class="n-welcome"><small>আসসালামু আলাইকুম</small><b>প্রিয় মুসল্লি 👋</b></div>
  <label class="n-per">📅 <select id="nPer">${[['m','এই মাস'],['d30','গত ৩০ দিন'],['y','এই বছর'],['all','সব সময়']].map(o=>`<option value="${o[0]}" ${o[0]===NP?'selected':''}>${o[1]}</option>`).join('')}</select></label></div></header>
  <section class="n-stats">${cards.map(c=>`<div class="n-stat ${c[0]}"><span class="si">${c[1]}</span><div><small>${c[2]}</small><b>${money(c[3])}</b><em class="${c[4]!==null&&c[4]<0?'dn':''}">${c[4]===null||c[4]===undefined?'—':arrow(c[4])}</em></div><div class="mb">${bars(c[5])}</div></div>`).join('')}</section>
  <section class="n-card n-live"><div class="n-lh"><b>📊 লাইভ ওভারভিউ</b><span class="n-rt"><i></i>লাইভ</span></div>
@@ -584,4 +584,90 @@ function tick(){const el=document.getElementById('mCd');if(!el)return;const x=ne
  document.querySelectorAll('.m-pr,.n-pl').forEach(c=>c.classList.toggle('on',c.dataset.k===x.k))}
 const _r=render;render=function(){_r();document.body.classList.toggle('is-home',page==='home');tick()};
 setInterval(tick,1000);render();
+})();
+
+
+/* ===== লাইব্রেরি v2: ফুল স্ক্রিন রিডার, একটাই কুরআন (তাজবিদ + উচ্চারণ + অনুবাদ), অ্যাপের ভেতরেই হাদিস/শিক্ষা ===== */
+(function(){
+const bnum=n=>Number(n).toLocaleString('bn-BD',{useGrouping:false});
+const LS={g:k=>{try{return localStorage.getItem(k)}catch(e){return null}},s:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}}};
+const getJ=u=>fetch(u).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()});
+let fs=null;
+/* --- ফুল স্ক্রিন পর্দা (ফোনের ব্যাক বাটনও কাজ করবে) --- */
+function fsOpen(title,ext){
+ if(fs)fs.remove();
+ fs=document.createElement('div');fs.id='fsView';
+ fs.innerHTML='<div class="fs-bar"><button class="fs-back" aria-label="ফিরে যান">←</button><b>'+esc(title)+'</b>'+(ext?'<a class="fs-ext" href="'+esc(ext)+'" target="_blank" rel="noopener" title="ব্রাউজারে খুলুন" aria-label="ব্রাউজারে খুলুন">↗</a>':'')+'</div><div class="fs-body"></div>';
+ document.body.appendChild(fs);document.body.classList.add('fs-on');
+ if(!(history.state&&history.state.fs))history.pushState({fs:1},'');
+ fs.querySelector('.fs-back').onclick=()=>{history.state&&history.state.fs?history.back():fsClose()};
+ return fs.querySelector('.fs-body')}
+function fsClose(){if(fs){fs.remove();fs=null}document.body.classList.remove('fs-on')}
+addEventListener('popstate',()=>{if(fs&&!(history.state&&history.state.fs))fsClose()});
+/* --- বাইরের সাইট অ্যাপের ভেতরেই (মোবাইল ভার্সন) --- */
+function openSite(title,url,noExt){
+ const b=fsOpen(title,noExt?null:url);
+ b.innerHTML='<div class="fs-load"><div class="fs-spin"></div><p>লোড হচ্ছে…</p></div><iframe src="'+esc(url)+'" title="'+esc(title)+'" allow="fullscreen; clipboard-write" referrerpolicy="no-referrer-when-downgrade"></iframe><div class="fs-hint" hidden><span>পেজ না এলে ↗ চেপে ব্রাউজারে খুলুন</span><button aria-label="বন্ধ">✕</button></div>';
+ const f=b.querySelector('iframe'),l=b.querySelector('.fs-load'),h=b.querySelector('.fs-hint');
+ f.onload=()=>l.remove();
+ h.querySelector('button').onclick=()=>h.remove();
+ setTimeout(()=>{if(h.isConnected)h.hidden=false},6000)}
+/* --- একীভূত কুরআন --- */
+let SUR=null,BT,S={n:1,ay:[]};
+const pref={tj:LS.g('q_tj')!=='0',tn:LS.g('q_tn')!=='0',tl:LS.g('q_tl')!=='0',fz:+LS.g('q_fz')||28};
+const TJ=h=>h.replace(/<tajweed class=([a-z_]+)>/g,'<i class="tj $1">').replace(/<\/tajweed>/g,'</i>').replace(/<span class=end>[^<]*<\/span>/g,'').replace(/<(?!\/?i[ >])[^>]*>/g,'');
+async function openQuran(){
+ const b=fsOpen('কুরআন মাজিদ');
+ b.innerHTML='<p class="muted" style="padding:20px">লোড হচ্ছে…</p>';
+ try{SUR=SUR||(await getJ('https://api.alquran.cloud/v1/surah')).data}catch(e){
+  b.innerHTML='<div class="notice-banner" style="margin:16px">ইন্টারনেট সংযোগ লাগবে। সংযোগ দিয়ে আবার চেষ্টা করুন।</div><button class="btn" id="qRetry" style="margin:0 16px">আবার চেষ্টা করুন</button>';
+  b.querySelector('#qRetry').onclick=openQuran;return}
+ const last=Math.min(114,Math.max(1,+LS.g('q_s')||1));
+ b.innerHTML='<div class="qr" style="--qfz:'+pref.fz+'px"><div class="qr-ctl"><select id="qrS">'+SUR.map(s=>'<option value="'+s.number+'">'+bnum(s.number)+'. '+esc(s.name)+' ('+esc(s.englishName)+')</option>').join('')+'</select>'
+ +'<div class="qr-opt"><label><input type="checkbox" id="qoTj"'+(pref.tj?' checked':'')+'> রঙিন তাজবিদ</label><label><input type="checkbox" id="qoTn"'+(pref.tn?' checked':'')+'> উচ্চারণ</label><label><input type="checkbox" id="qoTl"'+(pref.tl?' checked':'')+'> অনুবাদ</label><span class="qr-fz"><button id="qfM" aria-label="ছোট">A−</button><button id="qfP" aria-label="বড়">A+</button></span></div></div>'
+ +'<div id="qrKey"></div><div id="qrBody"></div></div>';
+ const sel=b.querySelector('#qrS');sel.value=last;
+ sel.onchange=()=>loadSurah(+sel.value);
+ const tog=(id,k,sv)=>{b.querySelector(id).onchange=e=>{pref[k]=e.target.checked;LS.s(sv,pref[k]?'1':'0');paint()}};
+ tog('#qoTj','tj','q_tj');tog('#qoTn','tn','q_tn');tog('#qoTl','tl','q_tl');
+ const fz=d=>{pref.fz=Math.min(46,Math.max(20,pref.fz+d));LS.s('q_fz',pref.fz);b.querySelector('.qr').style.setProperty('--qfz',pref.fz+'px')};
+ b.querySelector('#qfM').onclick=()=>fz(-3);b.querySelector('#qfP').onclick=()=>fz(3);
+ loadSurah(last)}
+async function loadSurah(n){
+ const body=$('#qrBody');if(!body)return;
+ body.innerHTML='<p class="muted" style="padding:20px">লোড হচ্ছে…</p>';
+ LS.s('q_s',n);
+ const [t,e]=await Promise.allSettled([getJ('https://api.quran.com/api/v4/quran/verses/uthmani_tajweed?chapter_number='+n),getJ('https://api.alquran.cloud/v1/surah/'+n+'/editions/quran-uthmani,bn.bengali,en.transliteration')]);
+ if(BT===undefined)BT=await getJ('quran-bn-translit.json').catch(()=>null);
+ if(!$('#qrBody'))return;
+ if(t.status!=='fulfilled'&&e.status!=='fulfilled'){body.innerHTML='<div class="notice-banner" style="margin:16px">সূরাটি লোড করা যায়নি। ইন্টারনেট দেখে আবার চেষ্টা করুন।</div>';return}
+ const ed=e.status==='fulfilled'?e.value.data:null,tv=t.status==='fulfilled'?t.value.verses:null,len=(ed?ed[0].ayahs.length:tv.length);
+ const bt=BT&&BT[n];
+ S={n,bnTr:!!bt,ay:Array.from({length:len},(_,i)=>{
+  let ar=ed?ed[0].ayahs[i].text:'';if(i===0&&n!==1&&n!==9&&ar.startsWith('بِسْمِ'))ar=ar.split(' ').slice(4).join(' ');
+  let tn=bt?bt[i]:(ed&&ed[2]?ed[2].ayahs[i].text:'');if(!bt&&i===0&&n!==1&&/^bismi/i.test(tn))tn=tn.split(' ').slice(4).join(' ');
+  return {ar,tj:tv&&tv[i]?TJ(tv[i].text_uthmani_tajweed):'',tn,tl:ed&&ed[1]?ed[1].ayahs[i].text:''}})};
+ paint();const sc=body.closest('.fs-body');if(sc)sc.scrollTop=0}
+function paint(){
+ const body=$('#qrBody');if(!body||!S.ay.length)return;
+ const n=S.n,hasTj=pref.tj&&S.ay.some(a=>a.tj);
+ $('#qrKey').innerHTML=hasTj?'<div class="tj-key"><i class="tj ghunnah">গুন্নাহ</i><i class="tj ikhfa">ইখফা</i><i class="tj idgham_ghunnah">ইদগাম</i><i class="tj iqlab">ইকলাব</i><i class="tj qalqalah">কলকলা</i><i class="tj madda_normal">মাদ</i><i class="tj ham_wasl">ওয়াসল</i></div>':'';
+ body.innerHTML=(n!==1&&n!==9?'<div class="qr-bis">بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ</div>':'')
+ +S.ay.map((a,i)=>'<div class="ay"><div class="ay-n">'+bnum(i+1)+'</div><div class="ar">'+(hasTj&&a.tj?a.tj:esc(a.ar))+' ﴿'+bnum(i+1)+'﴾</div>'
+  +(pref.tn&&a.tn?'<div class="ay-tn">'+esc(a.tn)+'</div>':'')+(pref.tl&&a.tl?'<p class="ay-tl">'+esc(a.tl)+'</p>':'')+'</div>').join('')
+ +(pref.tn&&!S.bnTr?'<div class="qr-note">উচ্চারণ এখন ইংরেজি হরফে দেখানো হচ্ছে। বাংলা হরফের উচ্চারণ দিতে quran-bn-translit.json ফাইল যুক্ত করুন।</div>':'')
+ +'<div class="qr-nav">'+(n>1?'<button class="btn secondary" data-qn="'+(n-1)+'">← আগের সূরা</button>':'<span></span>')+(n<114?'<button class="btn" data-qn="'+(n+1)+'">পরের সূরা →</button>':'<span></span>')+'</div>';
+ body.querySelectorAll('[data-qn]').forEach(x=>x.onclick=()=>{const s=$('#qrS');s.value=x.dataset.qn;loadSurah(+x.dataset.qn)})}
+/* --- লাইব্রেরি পেজ --- */
+const SITES={h:['হাদিস','https://ihadis.com/'],d:['দৈনন্দিন দোয়া','https://hisnmuslim.com/'],n:['নামাজ শিক্ষা ও ইসলামিক বই','https://www.islamhouse.com/bn/']};
+const ITEMS=[['q','📖','কুরআন মাজিদ','আরবি, বাংলা অনুবাদ ও তিলাওয়াত — অ্যাপের ভেতরেই','কুরআন পড়ুন'],['h','📚','হাদিস','হাদিসের বই — অ্যাপের ভেতরেই','হাদিস পড়ুন'],['d','🤲','দৈনন্দিন দোয়া','সকাল-সন্ধ্যা ও প্রয়োজনীয় দোয়া','দোয়া দেখুন'],['n','🕌','নামাজ শিক্ষা','ওজু, নামাজ ও প্রয়োজনীয় মাসআলা','শিখুন'],['t','📿','ডিজিটাল তাসবিহ','তাসবিহ গণনার সহজ কাউন্টার','তাসবিহ খুলুন']];
+library=function(){
+ const card=(k,ic,t,d,btn,feat)=>'<div class="page-card library-card"><div class="book-icon">'+ic+'</div><div><h3>'+t+'</h3><p>'+d+'</p><button class="btn secondary small" '+(feat?'data-feat="'+k+'"':'data-lib2="'+k+'"')+'>'+btn+'</button></div></div>';
+ return '<div class="grid page-grid">'+ITEMS.map(x=>card(...x)).join('')+card('qb','🧭','কিবলা কম্পাস','কাবার দিক দেখুন','কম্পাস খুলুন',1)+'</div>'};
+document.addEventListener('click',e=>{
+ const b=e.target.closest('[data-lib2]');if(!b)return;
+ e.stopImmediatePropagation();e.preventDefault();
+ const k=b.dataset.lib2;
+ if(k==='q')openSite('কুরআন মাজিদ','https://quran.com/bn',1);else if(k==='t')tasbih();else if(SITES[k])openSite(SITES[k][0],SITES[k][1])},true);
+if(page==='library')render();
 })();
