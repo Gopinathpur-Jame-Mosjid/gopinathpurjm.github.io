@@ -1,7 +1,7 @@
 // Firebase push (সেটআপ না থাকলে নীরবে বাদ যায়)
 try{self.window=self;importScripts('firebase-config.js','https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js','https://www.gstatic.com/firebasejs/10.14.1/firebase-messaging-compat.js');
 if(self.FIREBASE_CONFIG&&!/^YOUR_/.test(self.FIREBASE_CONFIG.apiKey)){firebase.initializeApp(self.FIREBASE_CONFIG);firebase.messaging()}}catch(e){}
-const CACHE='gopinathpur-masjid-v7';
+const CACHE='gopinathpur-masjid-v9';
 const ASSETS=['./','./index.html','./style.css','./app.js','./premium.js','./cloud.js','./firebase-config.js','./manifest.json','./icon.svg','./icon-192.png','./icon-512.png'];
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)))});
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==CACHE).map(x=>caches.delete(x)))).then(()=>self.clients.claim())));
