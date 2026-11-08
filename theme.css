@@ -1,0 +1,43 @@
+/* নতুন স্টাইল: পান্না সবুজ + ক্রিম, ফ্ল্যাট কার্ড, নিচে সাধারণ নেভ বার। লাইট/ডার্ক/অটো */
+:root{--pri:#0b6b4f;--green:#0b6b4f;--green2:#12a06f;--mint:#e3f3ec;--gold:#c8962e;--gold2:#7a5410;--goldsoft:#fbf1d9;--ink:#14231d;--muted:#5b6d64;--line:#dbe6df;--paper:#f6f8f4;--white:#fff;--deep:#0b3b2e;--lift:0 10px 30px -18px #0b3b2e66;--stars:none;--minL:none;--minR:none;color-scheme:light}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--pri:#1f9d75;--green:#5fd0a5;--green2:#46c096;--mint:#15332a;--gold:#e0b04a;--gold2:#f0cf84;--goldsoft:#33290f;--ink:#e6f2ec;--muted:#9bb3a8;--line:#24403a;--paper:#0b1512;--white:#13211c;color-scheme:dark}}
+:root[data-theme=dark]{--pri:#1f9d75;--green:#5fd0a5;--green2:#46c096;--mint:#15332a;--gold:#e0b04a;--gold2:#f0cf84;--goldsoft:#33290f;--ink:#e6f2ec;--muted:#9bb3a8;--line:#24403a;--paper:#0b1512;--white:#13211c;color-scheme:dark}
+:root[data-theme=light]{color-scheme:light}
+h1,h2,h3,.brand b,.hero h2,.mihrab b,.login h3,.modal h2{font-family:'Anek Bangla',sans-serif;font-weight:700}
+/* উপরের বার: শুধু মেনু, শিরোনাম, নোটিফিকেশন, প্রোফাইল */
+.topbar{background:var(--paper);border-bottom:1px solid var(--line);backdrop-filter:none}
+.topbar h1{font-size:20px;margin:0}.eyebrow{font-size:12px;color:var(--muted)}
+.top-actions{margin-left:auto;display:flex;gap:8px;align-items:center}
+.icon-btn,.profile{width:40px;height:40px;border-radius:12px;background:var(--white);border:1px solid var(--line);color:var(--green)}
+.profile{background:var(--pri);color:#fff;border:0}
+/* হিরো: সাদামাটা পান্না ব্যানার */
+.hero{min-height:0;border-radius:22px;padding:22px 20px;background:linear-gradient(135deg,#0b6b4f,#0b3b2e)!important;box-shadow:var(--lift)}
+.hero::before,.hero::after{display:none!important}
+.hero h2{font-size:26px}.hero .kicker{opacity:.85}
+.mihrab{border-radius:18px!important;background:#ffffff1f!important;border:1px solid #ffffff33!important;box-shadow:none!important;padding:16px!important;margin-top:6px}
+.hero-date{background:#ffffff22;border-radius:14px}
+.hero+.stats .stat:first-child{background:linear-gradient(135deg,#0b6b4f,#0b3b2e)!important;color:#fff}
+/* কার্ড ও বাটন */
+.panel,.page-card,.stat{border-radius:16px;box-shadow:0 1px 2px #0001}
+.btn{border-radius:12px}.btn.secondary{background:var(--mint);color:var(--green)}
+.notice-banner{border-radius:12px;border-left-width:0;border:1px solid var(--gold)}
+.tile{background:var(--white);border:1px solid var(--line);border-radius:16px;padding:14px 8px}
+.prayer-card{border-radius:14px}.prayer-card.next{background:var(--pri)!important;color:#fff}
+/* সাইডবার ও নিচের নেভ */
+.sidebar{background:linear-gradient(180deg,#0b3b2e,#08281f)}
+.prefs{margin:10px 6px;padding:12px;border-radius:14px;background:#ffffff14;color:#fff;font-size:13px}
+.prefs b{display:block;margin-bottom:6px}.seg{display:flex;gap:6px;margin-bottom:6px}
+.seg button,.prefs .clock-btn{flex:1;border:0;border-radius:10px;padding:9px 4px;background:#ffffff1f;color:#fff;font:600 13px 'Anek Bangla',sans-serif;cursor:pointer;width:auto;height:auto}
+.seg button.on{background:var(--gold);color:#222}
+.dock{left:0;right:0;bottom:0;border-radius:0;background:var(--white);border-top:1px solid var(--line);box-shadow:0 -6px 20px -12px #0004;padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px))}
+.dock button{background:none;color:var(--muted);border-radius:12px}.dock button.on{background:var(--mint);color:var(--green)}
+.main{padding-bottom:84px}
+
+/* কিবলা কম্পাস কার্ড */
+.qcard{margin:16px 0;padding:16px;border-radius:16px;background:var(--white);border:1px solid var(--line);transition:box-shadow .3s}
+.qcard.ok{box-shadow:0 0 0 3px #1fa66a;border-color:#1fa66a}.qcard h3{margin:0 0 6px}
+.qwrap{position:relative;width:230px;height:230px;margin:14px auto 4px}
+.qptr{position:absolute;left:50%;top:-12px;margin-left:-10px;border:10px solid transparent;border-top:0;border-bottom:18px solid var(--gold);z-index:2}
+.qdial{position:absolute;inset:0;border-radius:50%;border:6px solid var(--pri);background:radial-gradient(circle,var(--mint) 0 58%,var(--white) 59%);transition:transform .15s linear}
+.qn{position:absolute;top:8px;left:50%;transform:translateX(-50%);font-weight:700;color:var(--muted)}
+.qm{position:absolute;inset:0}.qm span{position:absolute;top:22px;left:50%;transform:translateX(-50%);font-size:30px}
