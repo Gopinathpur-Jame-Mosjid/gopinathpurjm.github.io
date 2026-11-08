@@ -8,5 +8,5 @@ self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(k=>Promise.al
 self.addEventListener('fetch',e=>{
   const u=new URL(e.request.url);
   if(e.request.method!=='GET'||u.origin!==location.origin||u.pathname.includes('/archive/'))return; // Firebase/Google অনুরোধ কখনো ক্যাশ হবে না
-  e.respondWith(fetch(e.request).then(r=>{const c=r.clone();caches.open(CACHE).then(x=>x.put(e.request,c));return r}).catch(()=>caches.match(e.request).then(m=>m||caches.match('./index.html'))));
+  e.respondWith(fetch(e.request,{cache:'reload'}).then(r=>{const c=r.clone();caches.open(CACHE).then(x=>x.put(e.request,c));return r}).catch(()=>caches.match(e.request,{ignoreSearch:true}).then(m=>m||caches.match('./index.html'))));
 });
