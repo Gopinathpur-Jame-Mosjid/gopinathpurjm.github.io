@@ -1,4 +1,4 @@
-/* গোপীনাথপুর জামে মসজিদ — সব লজিক এক ফাইলে (app + premium + cloud + fixes + features + extras + নতুন হোম) */
+/* গোপীনাথপুর জামে মসজিদ — সব লজিক এক ফাইলে (app + premium + cloud + fixes + features + extras + হোম/থিম/AI) */
 
 /* ===== app.js ===== */
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
@@ -445,7 +445,7 @@ setTimeout(()=>{prev=snap();if(!ex.ab_t||Date.now()-ex.ab_t>6048e5){ex.ab=JSON.s
 setInterval(()=>{if(!prev)return;const n=snap();K.forEach((k,i)=>{if(n[i]!==prev[i])ex.log.unshift({t:new Date().toLocaleString('bn-BD'),m:(n[i]>prev[i]?'যোগ: ':'মুছা: ')+KN[k]+' ('+bn(Math.abs(n[i]-prev[i]))+'টি)'})});if(n.join()!==prev.join()){prev=n;ex.log=ex.log.slice(0,100);sv()}},2000);
 render()})();
 
-/* ===== home (নতুন ডিজাইন) ===== */
+/* ===== হোম, থিম, AI ===== */
 /* ===== নতুন হোম পেজ (মকআপের ডিজাইন) — আগের সব ফিচার অপরিবর্তিত ===== */
 (function(){
 const NM=['ফজর','যোহর','আসর','মাগরিব','এশা'],IC=['🌅','☀️','🌤️','🌇','🌙'],b2=n=>Number(n).toLocaleString('bn-BD',{minimumIntegerDigits:2,useGrouping:false});
@@ -453,10 +453,11 @@ const tm=k=>(k==='যোহর'&&new Date().getDay()===5?db.prayer.জুমা:
 function nextP(){const now=new Date(),L=NM.map(k=>{const[h,m]=tm(k).split(':').map(Number),d=new Date(now);d.setHours(h,m,0,0);return{k,n:k==='যোহর'&&now.getDay()===5?'জুমা':k,d}}).filter(x=>!isNaN(x.d));
  return L.find(x=>x.d>now)||(L[0]&&{...L[0],d:new Date(L[0].d.getTime()+864e5)})}
 function hj(){try{return new Intl.DateTimeFormat('bn-BD-u-ca-islamic-umalqura',{day:'numeric',month:'long',year:'numeric'}).format(new Date())}catch(e){return''}}
-home=function(){
+const homeGreen=function(){
  const don=sum(db.donations,'amount'),goal=db.settings.goal||1,pct=Math.min(100,Math.round(don/goal*100)),n=db.notices.slice().reverse()[0],fri=new Date().getDay()===5;
  const tiles=[['committee','🕌','মসজিদ<br>পরিচিতি'],['library','📖','কুরআন ও<br>শিক্ষা'],['donations','🤲','দান ও<br>সদকা'],['community','👥','কমিউনিটি<br>ও সেবা'],['notices','📢','ঘোষণা ও<br>নোটিশ'],['accounts','📈','আয়-ব্যয়<br>হিসাব']];
  const chips=[['events','▦ ইভেন্ট ও মাহফিল'],['gallery','🖼️ ছবি ও ভিডিও'],['archive','🗂 পুরোনো হিসাব'],['blood','🩸 রক্তদাতা']];
+ const tchips=`<button class="m-chip" data-theme>🎨 থিম</button><button class="m-chip" data-ai>✨ AI সহকারী</button>`;
  return `<div class="mh"><header class="m-hero"><svg class="m-moon" viewBox="0 0 50 50"><path d="M33 4a22 22 0 1 0 13 30A17 17 0 0 1 33 4z" fill="#fff6c8"/></svg>
  <div class="m-top"><div class="m-brand"><div class="m-logo">🕌</div><div><h1>গোপীনাথপুর <em>জামে মসজিদ</em></h1><p>শান্তি · ইবাদত · সেবা</p></div></div></div>
  <div class="m-tools"><button class="m-pill" onclick="document.getElementById('menuBtn').click()">☰ মেনু</button><button class="m-bell" data-go="notices" aria-label="নোটিশ">🔔<b>${Number(db.notices.length).toLocaleString('bn-BD')}</b></button></div>
@@ -465,12 +466,118 @@ home=function(){
  <div class="m-glass m-next"><span class="ic">🕌</span><div><small>পরবর্তী নামাজ</small><strong id="mNm">—</strong><time id="mCd">০০:০০:০০</time></div></div></section>
  <section class="m-prayers">${NM.map((k,i)=>`<div class="m-pr" data-k="${k}" data-go="prayer"><span class="pi">${IC[i]}</span><b>${k==='যোহর'&&fri?'জুমা':k}</b><span class="t">${esc(tm(k))}</span></div>`).join('')}</section>
  <section class="m-tiles">${tiles.map(t=>`<button class="m-tile" data-go="${t[0]}"><i>${t[1]}</i>${t[2]}</button>`).join('')}</section>
- <div class="m-chips">${chips.map(c=>`<button class="m-chip" data-go="${c[0]}">${c[1]}</button>`).join('')}</div>
+ <div class="m-chips">${tchips}${chips.map(c=>`<button class="m-chip" data-go="${c[0]}">${c[1]}</button>`).join('')}</div>
  <section class="m-glass m-notice"><div class="ic">📢</div><div style="flex:1;min-width:0"><h3>সর্বশেষ নোটিশ <a data-go="notices">সব দেখুন ›</a></h3><p>${n?esc(n.title):'এখনো কোনো ঘোষণা নেই'}</p><small>${n?'📅 '+esc(n.date):''}</small></div></section>
  <section class="m-glass m-donate"><div class="k">🕋</div><div class="m"><b>মসজিদ উন্নয়নে সহযোগিতা করুন</b><div class="c">জমা: ${money(don)} / ${money(goal)}</div><div class="m-bar"><i style="width:${pct}%"></i></div><span class="m-pc">${Number(pct).toLocaleString('bn-BD')}%</span></div><button class="m-gold" data-go="donations">❤ এখনই<br>দান করুন</button></section></div>`};
+/* ===== থিম বদল (সবুজ / নিয়ন) ===== */
+const THEMES={green:['🟢 সবুজ-সোনালি','আগের ডিজাইন'],neon:['🔵 নিয়ন নীল','রাতের আকাশ, নীল-বেগুনি-সবুজ আলো']};
+const curTheme=()=>document.documentElement.dataset.mtheme==='neon'?'neon':'green';
+function setTheme(t){try{localStorage.gm_mtheme=t}catch(e){}document.documentElement.dataset.mtheme=t;
+ const m=document.querySelector('meta[name=theme-color]');if(m)m.content=t==='neon'?'#050a24':'#00170e';render()}
+function themeSheet(){const c=curTheme();
+ $('#modalBody').innerHTML=`<h2>🎨 থিম বেছে নিন</h2><div class="th-grid">${Object.keys(THEMES).map(k=>`<button class="th-card ${k} ${c===k?'on':''}" data-pick="${k}"><span class="th-sw"><i></i><i></i><i></i></span><b>${THEMES[k][0]}</b><small>${THEMES[k][1]}</small>${c===k?'<em>✓ চালু আছে</em>':''}</button>`).join('')}</div><p class="muted" style="font-size:13px">পছন্দ এই ফোনে সেভ থাকবে।</p>`;
+ $('#modalBackdrop').classList.add('show')}
+/* ===== হিসাবের ডাটা ও AI ===== */
+const bnn=n=>Number(n).toLocaleString('bn-BD'),dstr=d=>d.toISOString().slice(0,10);
+function txAll(){return[...db.donations.map(x=>({...x,kind:'আয়',isDon:1})),...db.accounts]}
+function range(p,off=0){const n=new Date(),y=n.getFullYear(),m=n.getMonth();let a,b;
+ if(p==='m'){a=new Date(y,m-off,1);b=new Date(y,m-off+1,0)}
+ else if(p==='lm'){a=new Date(y,m-1-off,1);b=new Date(y,m-off,0)}
+ else if(p==='y'){a=new Date(y-off,0,1);b=new Date(y-off,11,31)}
+ else if(p==='d30'){b=new Date(n.getTime()-off*30*864e5);a=new Date(b.getTime()-29*864e5)}
+ else return null;
+ return[dstr(a),dstr(new Date(b.getFullYear(),b.getMonth(),b.getDate()))]}
+const inR=(x,r)=>!r||((x.date||'')>=r[0]&&(x.date||'')<=r[1]);
+function sumP(p,off=0){const r=range(p,off),L=txAll().filter(x=>inR(x,r)),S=f=>L.filter(f).reduce((s,x)=>s+Number(x.amount||0),0);
+ const inc=S(x=>x.kind==='আয়'),out=S(x=>x.kind==='ব্যয়'),don=S(x=>x.isDon);
+ const top=k=>{const o={};L.filter(x=>x.kind===k).forEach(x=>o[x.category||'অন্যান্য']=(o[x.category||'অন্যান্য']||0)+Number(x.amount||0));return Object.entries(o).sort((a,b)=>b[1]-a[1])};
+ return{inc,out,don,bal:inc-out,n:L.length,topInc:top('আয়'),topOut:top('ব্যয়'),L}}
+const PN={m:'এই মাসে',lm:'গত মাসে',d30:'গত ৩০ দিনে',y:'এই বছরে',all:'এ পর্যন্ত'};
+const pct=(c,p)=>p?Math.round((c-p)/p*100):null;
+const arrow=v=>v===null?'—':(v>=0?'↑ ':'↓ ')+bnn(Math.abs(v))+'%';
+function insights(){const c=sumP('m'),l=sumP('lm'),o=[];
+ if(!c.n&&!l.n)return['এখনো কোনো হিসাব যোগ হয়নি। আয়-ব্যয় লিখলে এখানে স্বয়ংক্রিয় বিশ্লেষণ আসবে।'];
+ o.push(`এই মাসে আয় ${money(c.inc)}, ব্যয় ${money(c.out)}; ${c.bal>=0?'উদ্বৃত্ত':'ঘাটতি'} ${money(Math.abs(c.bal))}।`);
+ const gi=pct(c.inc,l.inc),go=pct(c.out,l.out);
+ if(gi!==null)o.push(`আয় গত মাসের চেয়ে ${bnn(Math.abs(gi))}% ${gi>=0?'বেশি':'কম'}।`);
+ if(go!==null)o.push(`ব্যয় গত মাসের চেয়ে ${bnn(Math.abs(go))}% ${go>=0?'বেশি':'কম'}${go>20?' — খরচের দিকে নজর দিন':''}।`);
+ if(c.topOut[0])o.push(`সবচেয়ে বড় ব্যয়ের খাত: ${c.topOut[0][0]} (${money(c.topOut[0][1])})।`);
+ if(c.topInc[0])o.push(`সবচেয়ে বড় আয়ের উৎস: ${c.topInc[0][0]} (${money(c.topInc[0][1])})।`);
+ const g=db.settings.goal||0,d=sum(db.donations,'amount');if(g)o.push(`দানের লক্ষ্যের ${bnn(Math.min(100,Math.round(d/g*100)))}% পূর্ণ হয়েছে।`);
+ if(c.bal<0)o.push('পরামর্শ: ঘাটতি পূরণে জুমার দান বা বিশেষ আবেদন চালু করা যায়।');
+ return o}
+function localAsk(q){q=q.trim();const p=/গত\s*মাস/.test(q)?'lm':/বছর/.test(q)?'y':/৩০|30/.test(q)?'d30':/এই\s*মাস|মাসে/.test(q)?'m':'all',s=sumP(p),w=PN[p];
+ if(/নামাজ|ওয়াক্ত|আজান|জামাত/.test(q)){const x=nextP();return x?`পরবর্তী নামাজ ${x.n}, সময় ${tm(x.k)}। আজকের সময়: `+NM.map(k=>k+' '+tm(k)).join(', ')+'।':'নামাজের সময় সেট করা নেই।'}
+ if(/নোটিশ|ঘোষণা/.test(q)){const n=db.notices.slice().reverse()[0];return n?`সর্বশেষ নোটিশ: ${n.title} (${n.date})`:'এখনো কোনো নোটিশ নেই।'}
+ if(/লক্ষ্য|লক্ষ|অগ্রগতি/.test(q)){const g=db.settings.goal||0,d=sum(db.donations,'amount');return g?`দানের লক্ষ্য ${money(g)}, জমা ${money(d)} (${bnn(Math.min(100,Math.round(d/g*100)))}%)।`:'লক্ষ্যমাত্রা সেট করা নেই।'}
+ if(/খাত|সবচেয়ে/.test(q)){const k=/আয়|দান/.test(q)?s.topInc:s.topOut;return k.length?w+' শীর্ষ খাত: '+k.slice(0,3).map(x=>x[0]+' '+money(x[1])).join(', ')+'।':'এই সময়ে কোনো তথ্য নেই।'}
+ if(/উদ্বৃত্ত|ব্যালেন্স|জমা|বাকি|হাতে/.test(q))return `${w} উদ্বৃত্ত ${money(s.bal)} (আয় ${money(s.inc)} − ব্যয় ${money(s.out)})।`;
+ if(/ব্যয়|খরচ|খরচা/.test(q))return `${w} মোট ব্যয় ${money(s.out)}, ${bnn(s.L.filter(x=>x.kind==='ব্যয়').length)}টি লেনদেন।`;
+ if(/দান|অনুদান|চাঁদা/.test(q))return `${w} দান ${money(s.don)}${/আয়/.test(q)?`, মোট আয় ${money(s.inc)}`:''}।`;
+ if(/আয়/.test(q))return `${w} মোট আয় ${money(s.inc)}।`;
+ if(/সারাংশ|বিশ্লেষণ|পরামর্শ|রিপোর্ট|প্রতিবেদন/.test(q))return insights().join(' ');
+ return 'আমি আয়, ব্যয়, উদ্বৃত্ত, দান, নামাজের সময়, নোটিশ ও দানের লক্ষ্য নিয়ে বলতে পারি। যেমন: “গত মাসে কত খরচ হয়েছে?”'}
+async function aiAsk(q){const u=(db.settings.aiUrl||'').trim();
+ if(u){try{const c=sumP('m'),l=sumP('lm'),ctx={মসজিদ:'গোপীনাথপুর জামে মসজিদ',এই_মাস:{আয়:c.inc,ব্যয়:c.out,উদ্বৃত্ত:c.bal,দান:c.don,শীর্ষ_ব্যয়:c.topOut.slice(0,3),শীর্ষ_আয়:c.topInc.slice(0,3)},গত_মাস:{আয়:l.inc,ব্যয়:l.out},দানের_লক্ষ্য:db.settings.goal,মোট_দান:sum(db.donations,'amount'),নামাজ:db.prayer,সর্বশেষ_নোটিশ:(db.notices.slice().reverse()[0]||{}).title};
+  const r=await fetch(u,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({question:q,context:ctx})});const j=await r.json();if(j.answer)return{t:j.answer,ai:1}}catch(e){}}
+ return{t:localAsk(q),ai:0}}
+function aiSheet(){
+ $('#modalBody').innerHTML=`<h2>✨ AI সহকারী</h2><div class="ai-box">${insights().map(x=>`<p>• ${esc(x)}</p>`).join('')}</div>
+ <div class="ai-chips">${['এই মাসে কত খরচ?','গত মাসে আয় কত?','উদ্বৃত্ত কত?','পরবর্তী নামাজ কখন?','কোন খাতে বেশি খরচ?'].map(x=>`<button class="ai-chip">${x}</button>`).join('')}</div>
+ <div id="aiLog" class="ai-log"></div><div class="ai-row"><input id="aiQ" placeholder="প্রশ্ন লিখুন, যেমন: এই বছরে দান কত?"><button class="btn" id="aiGo">পাঠান</button></div>
+ <small class="muted" id="aiMode">${db.settings.aiUrl?'🟢 অনলাইন AI চালু':'⚪ অ্যাপের তথ্য থেকে হিসাব করা উত্তর (অনলাইন AI বন্ধ)'} · <a href="#" id="aiCfg" style="color:var(--green)">AI সেটিং</a></small>`;
+ $('#modalBackdrop').classList.add('show');
+ const log=$('#aiLog'),go=async q=>{q=q.trim();if(!q)return;log.insertAdjacentHTML('beforeend',`<div class="ai-me">${esc(q)}</div><div class="ai-bot" id="aiW">…</div>`);
+  const r=await aiAsk(q);const w=$('#aiW');w.removeAttribute('id');w.textContent=r.t;log.scrollTop=log.scrollHeight;$('#aiQ').value=''};
+ $('#aiGo').onclick=()=>go($('#aiQ').value);$('#aiQ').onkeydown=e=>{if(e.key==='Enter')go(e.target.value)};
+ document.querySelectorAll('.ai-chip').forEach(b=>b.onclick=()=>go(b.textContent));
+ $('#aiCfg').onclick=e=>{e.preventDefault();const v=prompt('অনলাইন AI-এর লিংক (Cloudflare Worker URL)। খালি রাখলে বন্ধ থাকবে:',db.settings.aiUrl||'');if(v===null)return;db.settings.aiUrl=v.trim();save();aiSheet();toast(v.trim()?'AI লিংক সেভ হয়েছে':'অনলাইন AI বন্ধ করা হয়েছে')}}
+/* ===== নিয়ন হোম ===== */
+let NP='m';
+function series(kind,p,n=5){const r=range(p)||[(txAll().map(x=>x.date||'').sort()[0]||dstr(new Date())),dstr(new Date())],a=new Date(r[0]),b=new Date(r[1]),span=Math.max(1,(b-a)/864e5+1),out=Array(n).fill(0);
+ txAll().forEach(x=>{if(!inR(x,r)||!x.date)return;const ok=kind==='inc'?x.kind==='আয়':kind==='out'?x.kind==='ব্যয়':kind==='don'?x.isDon:1;if(!ok)return;const i=Math.min(n-1,Math.floor((new Date(x.date)-a)/864e5/span*n));out[i]+=Number(x.amount||0)});return out}
+const bars=a=>{const m=Math.max(...a,0);return a.map(v=>`<i style="height:${m>0?Math.max(18,Math.round(v/m*100)):18}%"></i>`).join('')};
+function chart(p){const yr=p==='y',N=yr?12:30,r=range(p)||range('d30'),a=new Date(r[0]),inc=Array(N).fill(0),out=Array(N).fill(0);
+ txAll().forEach(x=>{if(!inR(x,r)||!x.date)return;const d=new Date(x.date),i=yr?d.getMonth():Math.min(N-1,Math.round((d-a)/864e5));(x.kind==='আয়'?inc:out)[i]+=Number(x.amount||0)});
+ const mx=Math.max(...inc,...out,1),W=320,H=110,X=i=>8+i*(W-16)/(N-1),Y=v=>H-8-v/mx*(H-24);
+ const pts=arr=>arr.map((v,i)=>X(i).toFixed(1)+','+Y(v).toFixed(1)).join(' ');
+ const lab=yr?['জানু','মার্চ','মে','জুলাই','সেপ্টে','নভে']:['১','৭','১৪','২১','৩০'];
+ const grid=[0,.5,1].map(f=>`<line x1="8" x2="${W-8}" y1="${(Y(mx*f)).toFixed(1)}" y2="${(Y(mx*f)).toFixed(1)}" stroke="#ffffff18"/>`).join('');
+ return `<svg viewBox="0 0 ${W} ${H+18}" class="n-svg"><defs><linearGradient id="ng" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#19e6c1" stop-opacity=".75"/><stop offset="1" stop-color="#19e6c1" stop-opacity=".05"/></linearGradient></defs>${grid}
+ <polygon points="${X(0)},${H-8} ${pts(inc)} ${X(N-1)},${H-8}" fill="url(#ng)"/><polyline points="${pts(inc)}" fill="none" stroke="#19e6c1" stroke-width="2.2" stroke-linejoin="round"/>
+ <polyline points="${pts(out)}" fill="none" stroke="#b36bff" stroke-width="2" stroke-dasharray="4 3" stroke-linejoin="round"/>
+ ${inc.map((v,i)=>v&&N<=12?`<circle cx="${X(i)}" cy="${Y(v)}" r="3" fill="#fff"/>`:'').join('')}
+ ${lab.map((t,i)=>`<text x="${8+i*(W-16)/(lab.length-1)}" y="${H+12}" fill="#c9d3ff" font-size="9" text-anchor="${i?i==lab.length-1?'end':'middle':'start'}">${t}</text>`).join('')}</svg>
+ <div class="n-leg"><span><i style="background:#19e6c1"></i>আয়</span><span><i style="background:#b36bff"></i>ব্যয়</span>${mx<=1?'<em>এখনো তথ্য নেই</em>':''}</div>`}
+function homeNeon(){
+ const p=NP,s=sumP(p),pv=range(p)?sumP(p,1):null,fri=new Date().getDay()===5;
+ const cards=[['teal','🤲','মোট দান',s.don,pv&&pct(s.don,pv.don),series('don',p)],['purple','📈','মোট আয়',s.inc,pv&&pct(s.inc,pv.inc),series('inc',p)],['blue','🧾','মোট ব্যয়',s.out,pv&&pct(s.out,pv.out),series('out',p)],['gold','🪙','উদ্বৃত্ত',s.bal,pv&&pct(s.bal,pv.bal),series('inc',p).map((v,i)=>v-series('out',p)[i]).map(v=>Math.max(0,v))]];
+ const cm=sumP('m'),lmm=sumP('lm'),gr=pct(cm.inc,lmm.inc);
+ const stats=[['👥',db.members.length,'সদস্য'],['📢',db.notices.length,'নোটিশ'],['▦',db.events.length,'ইভেন্ট'],['🧾',txAll().length,'লেনদেন']];
+ return `<div class="mh nh"><header class="n-hero"><div class="n-top"><div class="n-logo">🕌</div><div class="n-title"><h1>গোপীনাথপুর জামে মসজিদ</h1><p>ডিজিটাল ড্যাশবোর্ড</p><u></u></div>
+ <button class="n-bell" data-go="notices" aria-label="নোটিশ">🔔<b></b></button><button class="n-avatar" data-go="admin" aria-label="অ্যাডমিন">A</button></div>
+ <div class="n-row2"><button class="n-menu" onclick="document.getElementById('menuBtn').click()" aria-label="মেনু">☰</button><div class="n-welcome"><small>আসসালামু আলাইকুম</small><b>প্রিয় মুসল্লি 👋</b></div>
+ <label class="n-per">📅 <select id="nPer">${[['m','এই মাস'],['d30','গত ৩০ দিন'],['y','এই বছর'],['all','সব সময়']].map(o=>`<option value="${o[0]}" ${o[0]===NP?'selected':''}>${o[1]}</option>`).join('')}</select></label></div></header>
+ <section class="n-stats">${cards.map(c=>`<div class="n-stat ${c[0]}"><span class="si">${c[1]}</span><div><small>${c[2]}</small><b>${money(c[3])}</b><em class="${c[4]!==null&&c[4]<0?'dn':''}">${c[4]===null||c[4]===undefined?'—':arrow(c[4])}</em></div><div class="mb">${bars(c[5])}</div></div>`).join('')}</section>
+ <section class="n-card n-live"><div class="n-lh"><b>📊 লাইভ ওভারভিউ</b><span class="n-rt"><i></i>লাইভ</span></div>
+ <div class="n-lm"><div class="n-up">↗</div><div><strong>${gr===null?'—':(gr>=0?'+':'−')+bnn(Math.abs(gr))+'%'}</strong><small>এই মাসে আয়ের প্রবৃদ্ধি</small></div><div class="n-orb"></div></div>
+ <div class="n-np"><span>🕌 পরবর্তী নামাজ</span><b id="mNm">—</b><time id="mCd">০০:০০:০০</time></div>
+ <div class="n-ms">${stats.map(x=>`<div><span>${x[0]}</span><b>${bnn(x[1])}</b><small>${x[2]}</small></div>`).join('')}</div></section>
+ <section class="n-card"><div class="n-lh"><b>📈 আয়-ব্যয়ের পরিসংখ্যান</b><small class="muted">${NP==='y'?'মাস অনুযায়ী':'দিন অনুযায়ী'}</small></div>${chart(p)}</section>
+ <section class="n-two"><div class="n-card"><div class="n-lh"><b>⭐ নামাজের সময়</b><button class="n-go" data-go="prayer" aria-label="সব দেখুন">›</button></div>
+ ${NM.map((k,i)=>`<div class="n-pl" data-k="${k}"><em>${bnn(i+1)}.</em><span class="pi">${IC[i]}</span><b>${k==='যোহর'&&fri?'জুমা':k}</b><span class="n-pt t">${esc(tm(k))}</span></div>`).join('')}</div>
+ <div class="n-card"><div class="n-lh"><b>⚡ কুইক অ্যাকশন</b></div><div class="n-qa"><button data-action="addDonation"><i>🤲</i>দান যোগ</button><button data-action="addNotice"><i>📢</i>নোটিশ দিন</button><button data-go="accounts"><i>📊</i>রিপোর্ট</button><button data-theme><i>🎨</i>থিম</button></div></div></section>
+ <section class="n-card n-ai"><div class="n-lh"><b>✨ AI সহকারী</b><span class="n-rt"><i></i>স্মার্ট</span></div><p>${esc(insights()[0])}</p><div class="n-aib"><button class="n-btn" data-ai>বিশ্লেষণ দেখুন</button><button class="n-btn ghost" data-ai>প্রশ্ন করুন</button></div></section></div>`}
+document.addEventListener('change',e=>{if(e.target.id==='nPer'){NP=e.target.value;render()}});
+document.addEventListener('click',e=>{
+ if(e.target.closest('[data-theme]')){e.preventDefault();themeSheet();return}
+ if(e.target.closest('[data-ai]')){e.preventDefault();aiSheet();return}
+ const k=e.target.closest('[data-pick]');if(k){setTheme(k.dataset.pick);typeof closeModal==='function'?closeModal():$('#modalBackdrop').classList.remove('show');toast(k.dataset.pick==='neon'?'নিয়ন থিম চালু':'সবুজ-সোনালি থিম চালু')}});
+home=function(){return curTheme()==='neon'?homeNeon():homeGreen()};
+{const sf=document.querySelector('.sidebar-foot');if(sf)sf.insertAdjacentHTML('beforebegin','<button class="nav-item" data-theme>🎨 <span>থিম পরিবর্তন</span></button><button class="nav-item" data-ai>✨ <span>AI সহকারী</span></button>')}
 function tick(){const el=document.getElementById('mCd');if(!el)return;const x=nextP();if(!x)return;
  let s=Math.max(0,Math.floor((x.d-new Date())/1e3));el.textContent=b2(s/3600|0)+':'+b2(s%3600/60|0)+':'+b2(s%60);document.getElementById('mNm').textContent=x.n;
- document.querySelectorAll('.m-pr').forEach(c=>c.classList.toggle('on',c.dataset.k===x.k))}
+ document.querySelectorAll('.m-pr,.n-pl').forEach(c=>c.classList.toggle('on',c.dataset.k===x.k))}
 const _r=render;render=function(){_r();document.body.classList.toggle('is-home',page==='home');tick()};
 setInterval(tick,1000);render();
 })();
