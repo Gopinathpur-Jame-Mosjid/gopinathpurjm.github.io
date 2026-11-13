@@ -516,6 +516,20 @@ html[data-theme=light] .qr .ay-tn{color:#0b6b4f}
 .qr-note{margin:14px 0;font-size:12px;opacity:.75}
 .qr-nav{display:flex;justify-content:space-between;gap:10px;padding:16px 0 calc(env(safe-area-inset-bottom,0px) + 24px)}
 </style>
+<style>
+.nav-item .ext{margin-left:auto;opacity:.65;font-size:13px}
+#iftarView{position:fixed;inset:0;z-index:9999;background:#fff;display:none;flex-direction:column}
+#iftarView.on{display:flex}
+#iftarView .ibar{display:flex;align-items:center;gap:8px;padding:10px 12px;padding-top:calc(10px + env(safe-area-inset-top,0px));background:#062f27;color:#fff;font:600 15px 'Anek Bangla',sans-serif}
+#iftarView .ibar button,#iftarView .ibar a{border:0;background:#ffffff1f;color:#fff;padding:8px 12px;border-radius:10px;font:500 13px 'Anek Bangla',sans-serif;text-decoration:none;cursor:pointer;white-space:nowrap}
+#iftarView .sp{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#iftarView iframe{flex:1;border:0;width:100%;background:#fff}
+#iftarAsk{position:fixed;inset:0;z-index:10000;background:#000a;display:none;align-items:center;justify-content:center;padding:20px}
+#iftarAsk.on{display:flex}
+#iftarAsk .box{background:#fff;color:#1b2b24;border-radius:18px;padding:20px;max-width:340px;width:100%;font:500 15px 'Anek Bangla',sans-serif;text-align:center;line-height:1.6}
+#iftarAsk .box button{display:block;width:100%;margin-top:10px;padding:12px;border-radius:12px;border:0;font:600 15px 'Anek Bangla',sans-serif;cursor:pointer}
+#iftarAsk .y{background:#0b6a51;color:#fff}#iftarAsk .n{background:#e8efe9;color:#1b2b24}
+</style>
 </head>
 <body>
 <div class="app-shell">
@@ -535,6 +549,7 @@ html[data-theme=light] .qr .ay-tn{color:#0b6b4f}
     <button class="nav-item" data-page="gallery">▧ <span>ছবি ও ভিডিও</span></button>
     <button class="nav-item" data-page="archive">🗂 <span>পুরোনো বছরের হিসাব</span></button>
     <button class="nav-item" data-page="blood">🩸 <span>রক্তদাতা তালিকা</span></button>
+    <button class="nav-item" id="iftarSwitch" type="button">🌙 <span>ইফতার ফান্ড</span><span class="ext" aria-hidden="true">↗</span></button>
     <button class="nav-item owner-only" data-page="team">👥 <span>অ্যাডমিন ব্যবস্থাপনা</span></button>
     <button class="nav-item" data-page="admin">⚙ <span>অ্যাডমিন প্যানেল</span></button>
   </nav>
@@ -548,5 +563,50 @@ html[data-theme=light] .qr .ay-tn{color:#0b6b4f}
 <div class="toast" id="toast"></div>
 <div class="modal-backdrop" id="modalBackdrop"><section class="modal" id="modal"><button class="modal-close" id="closeModal">×</button><div id="modalBody"></div></section></div>
 <nav class="dock" id="dock"><button data-page="home"><i>🏠</i>হোম</button><button data-page="prayer"><i>🕐</i>নামাজ</button><button class="mid" data-page="committee" aria-label="পরিচিতি"><i>🕌</i></button><button data-page="gallery"><i>🖼️</i>গ্যালারি</button><button><i>☰</i>মেনু</button></nav>
-<script src="firebase-config.js"></script><script src="app.js?v=15"></script>
+<script src="firebase-config.js"></script><script src="app.js?v=16"></script>
+<div id="iftarAsk"><div class="box"><div>আপনার ফোনে ইফতার ফান্ড অ্যাপ কি ইনস্টল করা আছে?</div><button class="y" id="iftarYes">হ্যাঁ, ইনস্টল আছে</button><button class="n" id="iftarNo">না, এখানেই খুলুন</button></div></div>
+<div id="iftarView"><div class="ibar"><button id="iftarBack">← মসজিদ অ্যাপে ফিরুন</button><span class="sp">ইফতার ফান্ড</span><a href="https://gopinathpuriftar.github.io/" target="_blank" rel="noopener">আলাদা খুলুন ↗</a><button id="iftarReset" title="উত্তর বদলান">⚙</button></div><iframe id="iftarFrame" title="ইফতার ফান্ড" loading="lazy"></iframe></div>
+<script>(function(){var U='https://gopinathpuriftar.github.io/',K='gm_iftar_installed',$=function(i){return document.getElementById(i)};
+function get(){try{return localStorage.getItem(K)}catch(e){return null}}
+function set(v){try{v?localStorage.setItem(K,v):localStorage.removeItem(K)}catch(e){}}
+function inApp(){var f=$('iftarFrame');if(!f.src||f.src==='about:blank'||f.src===location.href)f.src=U;$('iftarView').classList.add('on')}
+function ext(){window.open(U,'_blank','noopener')}
+$('iftarSwitch').onclick=function(){var v=get();if(v==='yes')ext();else if(v==='no')inApp();else $('iftarAsk').classList.add('on')};
+$('iftarYes').onclick=function(){set('yes');$('iftarAsk').classList.remove('on');ext()};
+$('iftarNo').onclick=function(){set('no');$('iftarAsk').classList.remove('on');inApp()};
+$('iftarBack').onclick=function(){$('iftarView').classList.remove('on')};
+$('iftarReset').onclick=function(){set(null);$('iftarView').classList.remove('on');$('iftarAsk').classList.add('on')};
+$('iftarAsk').onclick=function(e){if(e.target===this)this.classList.remove('on')};
+})()</script>
+<script>(function(){
+var CFG={apiKey:"AIzaSyDln73lJBvW4hgzbo9aFEF4y63gIwOAEXc",authDomain:"gopinathpuriftar.firebaseapp.com",projectId:"gopinathpuriftar",appId:"1:141635445318:web:abc922cc64b2731a6c6047"},CK='gm_iftar_meta',st=null;
+try{st=JSON.parse(localStorage.getItem(CK)||'null')}catch(e){}
+function bn(n){return String(n).replace(/\d/g,function(d){return '০১২৩৪৫৬৭৮৯'[d]})}
+function idx(){var s=st.start.split('-'),t=new Date();return Math.round((new Date(t.getFullYear(),t.getMonth(),t.getDate(),12)-new Date(+s[0],s[1]-1,+s[2],12))/864e5)}
+function live(){return !st||!st.start||(function(){var i=idx();return i>=-10&&i<=32})()}
+function load(u){return new Promise(function(a,b){var e=document.createElement('script');e.src=u;e.onload=a;e.onerror=b;document.head.appendChild(e)})}
+function ensure(){var p=Promise.resolve();if(!(window.firebase&&firebase.initializeApp))p=load('https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js');return p.then(function(){if(!firebase.firestore)return load('https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js')})}
+function conn(){ensure().then(function(){var a;try{a=firebase.app('iftar')}catch(e){a=firebase.initializeApp(CFG,'iftar')}
+a.firestore().collection('meta').doc('main').onSnapshot(function(d){if(!d.exists)return;var r=d.data()||{},c=r.cfg||{};
+st={start:c.start,it:c.it||'17:55',days:(r.days||[]).map(function(x){return{w:x.w||'',m:x.m||''}})};
+try{localStorage.setItem(CK,JSON.stringify(st))}catch(e){}refresh()},function(){})}).catch(function(){})}
+function cdText(){if(!st||!st.start)return '';var i=idx();if(i<0)return 'রমজান শুরু হতে '+bn(-i)+' দিন বাকি';
+var h=(st.it||'17:55').split(':'),t=new Date(),T=new Date(t.getFullYear(),t.getMonth(),t.getDate(),+h[0],+h[1]),df=T-t;
+return df>0?'ইফতারের বাকি '+bn(Math.floor(df/36e5))+' ঘণ্টা '+bn(Math.floor(df%36e5/6e4))+' মিনিট':'আজকের ইফতার হয়ে গেছে'}
+function esc(x){var d=document.createElement('div');d.textContent=x;return d.innerHTML}
+function card(){var i=idx(),d=st.days&&st.days[i],l1='🌙 ইফতার ফান্ড',l2='';
+if(i<0)l2='ইফতার বুকিং এখন চালু, চাপ দিয়ে দেখুন';
+else if(d&&d.w){l2='আজ ইফতার দিচ্ছেন: '+esc(d.w)+(d.m?' · মেনু: '+esc(d.m):'')}
+else l2='আজকের ইফতারের তথ্য ইফতার অ্যাপে দেখুন';
+return '<div id="iftarCard" role="button" tabindex="0" style="margin:0 0 14px;padding:14px 16px;border-radius:18px;background:#0f1b3d;color:#fff;font-family:\'Anek Bangla\',sans-serif;cursor:pointer;line-height:1.6"><div style="font-weight:600;font-size:16px">'+l1+'</div><div style="font-size:14px;opacity:.9">'+l2+'</div><div id="iftarCd" style="font-size:15px;font-weight:600;color:#ffd391;margin-top:2px">'+cdText()+'</div><div style="font-size:13px;opacity:.75;margin-top:4px">ইফতার অ্যাপ খুলতে চাপুন ↗</div></div>'}
+function place(){var c=document.getElementById('content');if(!c)return;var ex=document.getElementById('iftarCard'),a=document.querySelector('#nav .nav-item.active'),home=a&&a.dataset.page==='home',ok=st&&st.start&&home&&(function(){var i=idx();return i>=-10&&i<(st.days||[]).length})();
+if(!ok){if(ex)ex.remove();return}
+if(ex)return;c.insertAdjacentHTML('afterbegin',card());var n=document.getElementById('iftarCard');n.onclick=function(){document.getElementById('iftarSwitch').click()}}
+function refresh(){var b=document.getElementById('iftarSwitch');if(b)b.style.display=live()?'':'none';var ex=document.getElementById('iftarCard');if(ex)ex.remove();place()}
+setInterval(function(){var e=document.getElementById('iftarCd');if(e&&st)e.textContent=cdText()},30000);
+var c=document.getElementById('content'),nv=document.getElementById('nav');
+if(c)new MutationObserver(place).observe(c,{childList:true});
+if(nv)new MutationObserver(function(){setTimeout(place,50)}).observe(nv,{attributes:true,subtree:true,attributeFilter:['class']});
+refresh();conn();setTimeout(place,600);
+})()</script>
 </body></html>
